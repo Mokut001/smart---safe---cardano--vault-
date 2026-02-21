@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardano Savings Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; background: #0f172a; color: white; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="max-w-6xl mx-auto p-6 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold italic">CV</div>
+            <h1 class="text-xl font-bold tracking-tight">SAVINGS <span class="text-blue-500">VAULT</span></h1>
+        </div>
+        <button id="connectBtn" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl font-semibold transition-all">
+            Connect Wallet
+        </button>
+    </nav>
+
+    <main class="max-w-4xl mx-auto mt-12 px-6">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-extrabold mb-4">Your Decentralized Piggy Bank</h2>
+            <p class="text-slate-400">Lock your ADA. Set a goal. Reach it. Immutable Haskell logic ensures you wait until your target is met.</p>
+        </div>
+
+        <!-- Vault Dashboard -->
+        <div id="vaultDashboard" class="hidden space-y-8">
+            <div class="glass-card p-8 rounded-3xl relative overflow-hidden">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium uppercase tracking-widest">Current Savings</p>
+                        <h3 class="text-5xl font-bold mt-1"><span id="currentAda">0.00</span> <span class="text-lg text-blue-400">₳</span></h3>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-400 text-sm font-medium uppercase tracking-widest">Target Goal</p>
+                        <h4 class="text-2xl font-semibold mt-1"><span id="targetAda">0.00</span> ₳</h4>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-800 h-6 rounded-full overflow-hidden mb-4 border border-slate-700">
+                    <div id="progressBar" class="progress-bar h-full bg-gradient-to-r from-blue-600 to-indigo-500 shadow-[0_0_20px_rgba(37,99,235,0.4)]" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-xs font-bold text-slate-500">
+                    <span id="progressText">0% Reached</span>
+                    <span id="remainingAda">₳0.00 Remaining</span>
+                </div>
+
+                <!-- Notification -->
+                <div id="notification" class="hidden mt-6 bg-emerald-500/20 border border-emerald-500/50 p-4 rounded-xl flex items-center gap-3 animate-pulse">
+                    <span class="text-2xl">🎉</span>
+                    <p class="text-emerald-400 font-bold">Goal Matched! You can now withdraw your funds.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Action: Deposit -->
+                <div class="glass-card p-6 rounded-3xl">
+                    <h4 class="font-bold mb-4 flex items-center gap-2"><span>📥</span> Deposit ADA</h4>
+                    <input type="number" id="depositAmount" placeholder="Amount (₳)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <button id="depositBtn" class="w-full bg-slate-100 text-slate-900 hover:bg-white font-bold py-3 rounded-xl transition-all">
+                        Fund Vault
+                    </button>
+                </div>
+
+                <!-- Action: Withdraw -->
+                <div class="glass-card p-6 rounded-3xl">
+                    <h4 class="font-bold mb-4 flex items-center gap-2"><span>📤</span> Withdraw</h4>
+                    <p class="text-xs text-slate-500 mb-4">Withdrawals are only enabled once the target balance is met on the blockchain.</p>
+                    <button id="withdrawBtn" disabled class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3 rounded-xl transition-all">
+                        Unlock & Withdraw
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup View (If no vault) -->
+        <div id="setupView" class="glass-card p-10 rounded-3xl text-center">
+            <div class="w-20 h-20 bg-blue-600/20 text-blue-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
+            <h3 class="text-2xl font-bold mb-2">Create Your Vault</h3>
+            <p class="text-slate-400 mb-8 px-10">Set your goal amount below. Once created, a smart contract address will be generated for your personal savings.</p>
+            <div class="max-w-xs mx-auto space-y-4">
+                <input type="number" id="setupTarget" placeholder="Target Saving (₳)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-center text-xl font-bold focus:ring-2 focus:ring-blue-500">
+                <button id="setupBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/40 transition-all">
+                    Initialize Smart Vault
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="loader" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-blue-400 font-bold tracking-widest uppercase text-xs">Awaiting Network Approval...</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucid-cardano/bundle/lucid.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
